@@ -71,7 +71,7 @@ void check(int n, List l, int[n] nodes) {
   int i = 0;
   assert length(l) == n;
   while (cur != null) {
-    assert cur.val == nodes[n - i - 1];
+    assert cur.val == nodes[i] + 1;
     cur = cur.next;
     i += 1;
   }
