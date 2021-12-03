@@ -1,0 +1,93 @@
+#define LHS {| curr_node | prev_node | next_node |}
+#define LOC {| LHS | LHS.next | l.head |}
+#define COMP {| LOC ( == | != ) (LOC | null ) |}
+#define VAL {| v | LHS.val |}
+#define ARITH {| VAL + VAL | VAL + ?? |}
+
+struct Node {
+    int val;
+    Node next;
+}
+
+struct List {
+  Node head;
+}
+
+generator bit gen_bool(Node curr_node, Node prev_node, Node next_node){
+    if(??) { return {| (curr_node | prev_node | next_node) == (curr_node | prev_node | next_node | null) |}; }
+    if(??) { return {| (curr_node | prev_node | next_node) != (curr_node | prev_node | next_node | null) |}; }
+}
+
+generator Node gen_node(Node curr_node, Node prev_node, Node next_node, List l, int v){
+//    assert bnd >= 0;
+    if(??) { return l.head; }
+    if(??) { return {| (prev_node | next_node | curr_node).next |}; }
+    if(??) { return {| (prev_node | next_node | curr_node) |}; }
+    if(??) { return new Node(val=v, next=null); }
+//    if(??) { return null; }
+}
+
+List reverseSK(List l, int v) { 
+    Node curr_node = null;
+    Node prev_node = null;
+    Node next_node = null;
+    int i = 0;
+    repeat(??) {
+        LOC = gen_node(curr_node, prev_node, next_node, l, v);
+    }
+    while (gen_bool(curr_node, prev_node, next_node)) {
+        if (??) { VAL = ARITH; }
+        repeat(??) {
+            LOC = gen_node(curr_node, prev_node, next_node, l, v);
+        }
+    }
+    repeat(??) {
+        LOC = gen_node(curr_node, prev_node, next_node, l, v);
+    }
+    return l;
+}
+
+harness void main([int n], int[n] nodes, int v){
+  assume n < 4;
+  assume n >= 1;
+  List l = new List();
+  l = populateList(n, l, nodes);
+  l = reverseSK(l, v);
+  check(n, l , nodes, v);
+}
+
+
+List populateList(int n, List l, int[n] nodes) {
+  assert n > 0;
+  Node curr_node = new Node(val = nodes[0], next = null);
+  l.head = curr_node;
+  for (int i = 1; i < n; i++) {
+      Node new_node = new Node(val = nodes[i], next = null);
+      curr_node.next = new_node;
+      curr_node = new_node;
+  }
+  assert length(l) == n;
+  return l;
+}
+
+int length(List l) {
+    int len = 0;
+    Node curr_node = l.head;
+    while (curr_node != null) {
+        len += 1;
+        curr_node = curr_node.next;
+    }
+    return len;
+}
+
+void check(int n, List l, int[n] nodes, int v) {
+  Node cur = l.head;
+  int i = 0;
+  assert length(l) == n - 1;
+  while (cur != null) {
+    assert cur.val == nodes[i + 1];
+    cur = cur.next;
+    i += 1;
+  }
+  assert i == n - 1;
+}
