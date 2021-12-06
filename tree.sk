@@ -1,0 +1,111 @@
+#define LHS {| curr_node | prev_node | next_node |}
+#define LOC {| LHS | LHS.next | l.head |}
+#define COMP {| LOC ( == | != ) (LOC | null) |}
+#define VAL {| LHS.val |}
+#define ARITH {| VAL + VAL | VAL + ?? |}
+
+struct Tree {
+    int val;
+    Tree left;
+    Tree right;
+}
+
+generator bit gen_bool(Tree tree){
+    if(??) { return {| (tree.left | tree.right) == (tree.left | tree.right | null) |}; }
+}
+
+generator Tree gen_node(fun f, Tree tree, int bnd){
+    assert bnd >= 0;
+    if(??) { return tree.left; }
+    if(??) { return tree.right; }
+    if(??) { return f(gen_node(f, tree, bnd - 1)); }
+    if(??) { return f(gen_node(f, tree, bnd - 1)); }
+    if(??) { return null; }
+}
+
+generator int gen_arith(Tree tree, int bnd) {
+    assert bnd >= 0;
+    if (??) { return tree.val; }
+    if (??) { return 1; }
+    if (??) { return gen_arith(tree, bnd - 1) + gen_arith(tree, bnd - 1); }
+}
+
+Tree add1(Tree tree) {
+    if (gen_bool(tree)) {
+        return gen_node(add1, tree, 1);
+    } 
+    Tree left = gen_node(add1, tree, 2);
+    Tree right = gen_node(add1, tree, 2);
+    int val = gen_arith(tree, 1);
+    return new Tree(val=val,left=left, right=right);
+}
+
+harness void main([int n], int[n] nodes){
+    assume n < 4;
+    assume n >= 1;
+    Tree initial_tree = populateTree(nodes);
+    Tree final_tree = add1(initial_tree);
+    assert checkRev(initial_tree, final_tree);
+}
+
+Tree populateTree([int n], int[n] nodes) {
+    assert n >= 1;
+    Tree first_node = new Tree(val=nodes[0], left=null, right=null);
+    Tree first = first_node;
+    int i = 1;
+    while (i < n) {
+        Tree new_node = new Tree(val=nodes[i], left=null, right=null);
+        first_node.right = new_node;
+        first_node = new_node;
+        i++;
+    }
+    return first;
+}
+
+bit checkAdd1(Tree initial, Tree end) {
+    if (initial == null && end != null) {
+        return false;
+    }
+    if (initial != null && end == null) {
+        return false;
+    }
+    if (initial == null && end == null) {
+        return true;
+    }
+    if (initial.val + 1 != end.val) {
+        return false;
+    }
+    return checkAdd1(initial.left, end.left) && checkAdd1(initial.right, end.right);
+}
+
+bit checkRev(Tree initial, Tree end) {
+    if (initial == null && end != null) {
+        return false;
+    }
+    if (initial != null && end == null) {
+        return false;
+    }
+    if (initial == null && end == null) {
+        return true;
+    }
+    if (initial.val != end.val) {
+        return false;
+    }
+    return checkRev(initial.right, end.left) && checkRev(initial.left, end.right);
+}
+
+bit checkEquiv(Tree initial, Tree end) {
+    if (initial == null && end != null) {
+        return false;
+    }
+    if (initial != null && end == null) {
+        return false;
+    }
+    if (initial == null && end == null) {
+        return true;
+    }
+    if (initial.val != end.val) {
+        return false;
+    }
+    return checkEquiv(initial.right, end.right) && checkEquiv(initial.left, end.left);
+}
